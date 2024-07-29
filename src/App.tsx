@@ -1,6 +1,7 @@
 import * as esbuild from "esbuild-wasm";
 import { useEffect, useState, useRef } from "react";
 import "./App.css";
+import { unpkgPathPlugin } from "./plugins/unpkg-path-plugin";
 
 function App() {
   const ref = useRef<any>();
@@ -34,11 +35,13 @@ function App() {
     // TODO use FormData here
     // and will we need to transpile import/exports?
     try {
-      const transformed = await ref.current.transform(text, {
-        loader: "jsx",
-        target: "es2015",
+      const transformed = await ref.current.build({
+        entryPoints: ["index.js"],
+        bundle: true,
+        write: false,
+        plugins: [unpkgPathPlugin()],
       });
-      setCode(transformed.code);
+      setCode(transformed.outputFiles[0].text);
     } catch (e: unknown) {
       if (e instanceof Error) {
         console.log(e.message);
