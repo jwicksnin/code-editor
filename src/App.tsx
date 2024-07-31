@@ -34,12 +34,17 @@ function App() {
     }
     // TODO use FormData here
     // and will we need to transpile import/exports?
+    const env = ["process", "env", "NODE_ENV"].join('.');
     try {
       const transformed = await ref.current.build({
         entryPoints: ["index.js"],
         bundle: true,
         write: false,
         plugins: [unpkgPathPlugin()],
+        define: {
+          [env]: '"production"',
+          globalName: "window"
+        }
       });
       setCode(transformed.outputFiles[0].text);
     } catch (e: unknown) {
