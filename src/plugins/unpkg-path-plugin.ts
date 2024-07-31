@@ -1,4 +1,9 @@
 import * as esbuild from 'esbuild-wasm';
+import localForage from 'localforage';
+
+const cache = localForage.createInstance({ 
+  name: 'fileCache'
+});
  
 export const unpkgPathPlugin = () => {
   return {
@@ -33,19 +38,27 @@ export const unpkgPathPlugin = () => {
           return {
             loader: 'jsx',
             contents: `
-              import message from 'react';
+              import React, { useState } from 'react-select';
               console.log(message);
             `,
           };
         }
 
+        // Check to see if this exists in the cache
+        const cachedResult = await cache.getItem(args.path);
+        if (cachedResult) {
+          return cachedResult;
+        }
+
         const response = await fetch(args.path);
         const data = await response.text();
-        return {
+        const result = {
           loader: 'jsx',
           contents: data,
           resolveDir: new URL('./', response.url).pathname
         };
+        await cache.setItem(args.path, result);
+        return result;
       });
     },
   };
