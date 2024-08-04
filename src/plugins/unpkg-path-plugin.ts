@@ -1,9 +1,4 @@
 import * as esbuild from 'esbuild-wasm';
-import localForage from 'localforage';
-
-const cache = localForage.createInstance({ 
-  name: 'fileCache'
-});
  
 export const unpkgPathPlugin = () => {
   return {
@@ -32,7 +27,7 @@ export const unpkgPathPlugin = () => {
       // Override esbuild's default for reading the index.js directly
       // from the file system
       // Runs a second time to try to load the import file
-      build.onLoad({ filter: /.*/ }, async (args: any) => {
+      build.onLoad({ filter: /.*/ }, async (args: esbuild.OnLoadArgs) => {
  
         if (args.path === 'index.js') {
           return {
@@ -44,20 +39,25 @@ export const unpkgPathPlugin = () => {
           };
         }
 
-        // Check to see if this exists in the cache
-        const cachedResult = await cache.getItem(args.path);
+        // Check to see if this exists in any cache
+        let response;
+        const cachedResult: Response | undefined = await caches.match(args.path);
+        // If this is cached, then transform and return
         if (cachedResult) {
-          return cachedResult;
+          response = cachedResult;
+        } else {
+          response = await fetch(args.path);
+          // Create a clone because response can only be used once
+          const usableResponse = response.clone();
+          const cache = await caches.open('fileCache');
+          await cache.put(args.path, usableResponse);
         }
-
-        const response = await fetch(args.path);
         const data = await response.text();
-        const result = {
+        const result: esbuild.OnLoadResult = {
           loader: 'jsx',
           contents: data,
           resolveDir: new URL('./', response.url).pathname
         };
-        await cache.setItem(args.path, result);
         return result;
       });
     },
