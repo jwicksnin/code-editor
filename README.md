@@ -1,30 +1,22 @@
-# React + TypeScript + Vite
+# Typescript Code Editor Project
+## Technologies
+* React
+* Typescript
+* ESBuild
+* Vite
+* IndexedDB
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json', './tsconfig.app.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
-
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+## Notes
+### Offline Browser Storage: IndexedDB vs CacheAPI
+* Both have unlimitied storage (vs localStorage)
+* Needing to cache HTML, JS, assets? Use a CDN instead of offline storage
+* Cache API is tied to network requests, which at first glance made it better 
+for this project. However, because what is actually returned is a new object
+with the response as a property, we're not able to take advantage of `cache.add`, which 
+would both conditionally make the request and add it to the cache, leading to more code
+than using IndexedDB.
+* The Type required for Cache API is `Response`, so we can't make this simpler by putting
+the new object in the cache; instead, we must cache the network response.
+* Using a library like `localForage` (or `IDB`) abstracts a lot of the complexity of implementing
+IndexedDB and provides Promises as well.
+* See [`unpkgPathPlugin`](src/plugins/unpkg-path-plugin.ts) for usage.
