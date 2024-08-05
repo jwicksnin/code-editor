@@ -40,7 +40,7 @@ function App() {
         entryPoints: ["index.js"],
         bundle: true,
         write: false,
-        plugins: [unpkgPathPlugin()],
+        plugins: [unpkgPathPlugin(text)],
         define: {
           [env]: '"production"',
           globalName: "window"
