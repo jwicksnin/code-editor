@@ -9,22 +9,24 @@ function App() {
   const [code, setCode] = useState("");
 
   const startService = async () => {
+    if (ref.current) {
+      return;
+    }
+    ref.current = true;
     // need to upgrade the version of esbuild wasm so it uses `initialize` instead?
-    const service = await esbuild.startService({
+    await esbuild.initialize({
       worker: true,
       wasmURL: "/esbuild.wasm",
     });
-    return service;
-  };
+  }
 
   useEffect(() => {
-    async function startTransforming() {
-      ref.current = await startService();
-    }
-    startTransforming();
-    return () => {
-      ref.current && ref.current.stop();
-    };
+    // async function startTransforming() {
+    //   await startService();
+    // }
+    // if (!ref.current) {
+      startService();
+    // }
   }, []);
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -36,7 +38,7 @@ function App() {
     // and will we need to transpile import/exports?
     const env = ["process", "env", "NODE_ENV"].join('.');
     try {
-      const transformed = await ref.current.build({
+      const transformed = await esbuild.build({
         entryPoints: ["index.js"],
         bundle: true,
         write: false,
