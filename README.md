@@ -1,15 +1,4 @@
 # Typescript Code Editor Project
-<<<<<<< Updated upstream
-## Technologies
-* React
-* Typescript
-* ESBuild
-* Vite
-* IndexedDB
-
-## Notes
-### Offline Browser Storage: IndexedDB vs CacheAPI
-=======
 Building a browser-based code editor
 
 Using Typescript, ESBuild, React, Vite, IndexedDB
@@ -19,7 +8,6 @@ Based on the [Udemy course](https://www.udemy.com/course/react-and-typescript-bu
 ## Notes
 ### Offline Browser Storage: IndexedDB vs CacheAPI
 *See the [cacheAPI solution version here](https://github.com/jwicksnin/code-editor/tree/cacheAPI-solution)*
->>>>>>> Stashed changes
 * Both have unlimitied storage (vs localStorage)
 * Needing to cache HTML, JS, assets? Use a CDN instead of offline storage
 * Cache API is tied to network requests, which at first glance made it better 
