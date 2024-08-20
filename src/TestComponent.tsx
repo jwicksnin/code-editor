@@ -6,7 +6,7 @@ function TestComponent() {
       <h1>{label}</h1>
       <ul>
         {list.map((number) => (
-          <li>{number}</li>
+          <li key={number}>{number}</li>
         ))}
       </ul>
     </>
